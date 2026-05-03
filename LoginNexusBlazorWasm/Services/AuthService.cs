@@ -12,7 +12,7 @@ namespace LoginNexusBlazorWasm.Services
 
         private readonly List<User> _users = new()
         {
-            new User { Email = "professor@nexus.edu", Password = "123", Role = "Professor", Name = "Dr. Arnaldo" },
+            new User { Email = "danielpaiva@nexus.edu", Password = "123", Role = "Professor", Name = "Dr. Daniel Paiva" },
             new User { Email = "aluno@nexus.edu", Password = "123", Role = "Student", Name = "Estudante 01" }
         };
 
