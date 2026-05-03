@@ -1,0 +1,31 @@
+@page "/dashboard"
+@using LoginNexusBlazorWasm.Services
+@inject AuthService AuthService
+
+<PageTitle>Dashboard - Nexus</PageTitle>
+
+<div class="container mt-4">
+    <h2>Olá, @(AuthService.CurrentUser?.Name ?? "Usuário")!</h2>
+    <p class="text-muted">Bem-vindo ao seu painel acadêmico.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 bg-primary text-white p-3">
+                <h5>Turmas Ativas</h5>
+                <h2>4</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 bg-success text-white p-3">
+                <h5>Média Global</h5>
+                <h2>8.5</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 bg-warning text-dark p-3">
+                <h5>Tarefas Pendentes</h5>
+                <h2>2</h2>
+            </div>
+        </div>
+    </div>
+</div>
