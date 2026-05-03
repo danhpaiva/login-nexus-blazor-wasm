@@ -1,0 +1,61 @@
+@page "/notas"
+@using LoginNexusBlazorWasm.Services
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<PageTitle>Lançar Notas - Nexus</PageTitle>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h3>Lançar Notas: Sistemas Distribuídos</h3>
+        <span class="badge bg-dark">Professor: @AuthService.CurrentUser?.Name</span>
+    </div>
+
+    <table class="table table-hover mt-4 border shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Estudante</th>
+                <th>Matrícula</th>
+                <th style="width: 150px;">Nota</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aluno in alunos)
+            {
+                <tr>
+                    <td>@aluno.Nome</td>
+                    <td>@aluno.Matricula</td>
+                    <td>
+                        <input type="number" class="form-control" @bind="aluno.Nota" min="0" max="10" />
+                    </td>
+                    <td>
+                        <button class="btn btn-success btn-sm" @onclick="() => SalvarNota(aluno)">Salvar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private List<AlunoNota> alunos = new()
+    {
+        new AlunoNota { Nome = "Lucas Silva", Matricula = "2024001", Nota = 0 },
+        new AlunoNota { Nome = "Beatriz Oliveira", Matricula = "2024002", Nota = 0 },
+        new AlunoNota { Nome = "Carlos Eduardo", Matricula = "2024003", Nota = 0 }
+    };
+
+    private void SalvarNota(AlunoNota aluno)
+    {
+        // Aqui simularíamos uma chamada para API
+        Console.WriteLine($"Nota {aluno.Nota} salva para {aluno.Nome}");
+    }
+
+    public class AlunoNota
+    {
+        public string Nome { get; set; }
+        public string Matricula { get; set; }
+        public double Nota { get; set; }
+    }
+}
