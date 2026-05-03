@@ -1,4 +1,8 @@
 ﻿@inherits LayoutComponentBase
+@using LoginNexusBlazorWasm.Services
+@inject AuthService AuthService
+@implements IDisposable
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,11 +10,40 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+            @if (AuthService.CurrentUser != null)
+            {
+                <span class="me-3">Bem-vindo, <strong>@AuthService.CurrentUser.Name</strong>
+                    (@AuthService.CurrentUser.Role)</span>
+                    <button class="btn btn-sm btn-outline-danger" @onclick="Logout">Sair</button>
+                }
+            else
+                {
+                    <a href="login">Entrar</a>
+                }
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Subscreve ao evento para atualizar a tela quando o login ocorrer
+        AuthService.OnAuthStateChanged += StateHasChanged;
+    }
+
+    private void Logout()
+    {
+        AuthService.Logout();
+    }
+
+    // Boa prática: desinscrever do evento para evitar vazamento de memória
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
+    }
+}
