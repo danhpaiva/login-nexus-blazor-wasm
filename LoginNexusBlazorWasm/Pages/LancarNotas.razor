@@ -6,56 +6,98 @@
 <PageTitle>Lançar Notas - Nexus</PageTitle>
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center">
-        <h3>Lançar Notas: Sistemas Distribuídos</h3>
-        <span class="badge bg-dark">Professor: @AuthService.CurrentUser?.Name</span>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-0">Lançar Notas: Sistemas Distribuídos</h3>
+            <small class="text-muted">Semestre Atual: 2026.1</small>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-primary d-block mb-1 p-2">Professor: @AuthService.CurrentUser?.Name</span>
+            <button class="btn btn-outline-secondary btn-sm"
+                    @onclick='() => Nav.NavigateTo("/dashboard")'>Voltar</button>
+        </div>
     </div>
 
-    <table class="table table-hover mt-4 border shadow-sm">
-        <thead class="table-light">
-            <tr>
-                <th>Estudante</th>
-                <th>Matrícula</th>
-                <th style="width: 150px;">Nota</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var aluno in alunos)
-            {
+    <div class="table-responsive">
+        <table class="table table-hover border shadow-sm align-middle">
+            <thead class="table-dark">
                 <tr>
-                    <td>@aluno.Nome</td>
-                    <td>@aluno.Matricula</td>
-                    <td>
-                        <input type="number" class="form-control" @bind="aluno.Nota" min="0" max="10" />
-                    </td>
-                    <td>
-                        <button class="btn btn-success btn-sm" @onclick="() => SalvarNota(aluno)">Salvar</button>
-                    </td>
+                    <th>Estudante</th>
+                    <th>Matrícula</th>
+                    <th style="width: 150px;">Nota (0-10)</th>
+                    <th class="text-center">Ações</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var aluno in alunos)
+                {
+                    <tr>
+                        <td class="fw-bold">@aluno.Nome</td>
+                        <td><code class="text-dark">@aluno.Matricula</code></td>
+                        <td>
+                            <div class="input-group">
+                                <input type="number" class="form-control @(aluno.Nota < 6 ? "text-danger" : "text-success")"
+                                       @bind="aluno.Nota" min="0" max="10" step="0.5" />
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            @if (aluno.Salvo)
+                            {
+                                <span class="text-success fw-bold animate__animated animate__fadeIn">
+                                    <i class="oi oi-check"></i> Salvo!
+                                </span>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success btn-sm px-3" @onclick="() => SalvarNota(aluno)">
+                                    <i class="oi oi-circle-check"></i> Salvar
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @code {
     private List<AlunoNota> alunos = new()
     {
-        new AlunoNota { Nome = "Lucas Silva", Matricula = "2024001", Nota = 0 },
-        new AlunoNota { Nome = "Beatriz Oliveira", Matricula = "2024002", Nota = 0 },
-        new AlunoNota { Nome = "Carlos Eduardo", Matricula = "2024003", Nota = 0 }
+        new AlunoNota { Nome = "Lucas Silva", Matricula = "2024001", Nota = 8.5 },
+        new AlunoNota { Nome = "Beatriz Oliveira", Matricula = "2024002", Nota = 9.0 },
+        new AlunoNota { Nome = "Carlos Eduardo", Matricula = "2024003", Nota = 5.5 }
     };
 
-    private void SalvarNota(AlunoNota aluno)
+    protected override void OnInitialized()
     {
-        // Aqui simularíamos uma chamada para API
-        Console.WriteLine($"Nota {aluno.Nota} salva para {aluno.Nome}");
+        // Proteção de Rota (HCI/Segurança): Apenas professores acessam
+        if (AuthService.CurrentUser?.Role != "Professor")
+        {
+            Nav.NavigateTo("/dashboard");
+        }
+    }
+
+    private async Task SalvarNota(AlunoNota aluno)
+    {
+        // Validação simples de intervalo
+        if (aluno.Nota < 0 || aluno.Nota > 10) return;
+
+        // Simulação de delay de rede (UX: Feedback visual)
+        aluno.Salvo = true;
+        Console.WriteLine($"Nota {aluno.Nota} persistida para {aluno.Nome}");
+
+        // Reset do status "Salvo" após 2 segundos
+        await Task.Delay(2000);
+        aluno.Salvo = false;
+        StateHasChanged();
     }
 
     public class AlunoNota
     {
-        public string Nome { get; set; }
-        public string Matricula { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string Matricula { get; set; } = string.Empty;
         public double Nota { get; set; }
+        public bool Salvo { get; set; } // Propriedade para controle de UI
     }
 }
