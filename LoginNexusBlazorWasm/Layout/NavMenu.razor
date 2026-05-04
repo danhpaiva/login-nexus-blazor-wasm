@@ -19,7 +19,6 @@
             </NavLink>
         </div>
 
-        @* Só mostra o Login se NÃO houver usuário logado *@
         @if (AuthService.CurrentUser == null)
         {
             <div class="nav-item px-3">
@@ -29,7 +28,6 @@
             </div>
         }
 
-        @* Só mostra áreas restritas se houver usuário logado *@
         @if (AuthService.CurrentUser != null)
         {
             <div class="nav-item px-3">
@@ -39,15 +37,16 @@
             </div>
 
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="counter">
+                @* Ajustado de 'counter' para 'minhasturmas' *@
+                <NavLink class="nav-link" href="minhasturmas">
                     <span class="oi oi-book" aria-hidden="true"></span> Minhas Turmas
                 </NavLink>
             </div>
             
-            @* Bônus: Item específico para Professor *@
             @if (AuthService.CurrentUser.Role == "Professor")
             {
                 <div class="nav-item px-3">
+                    @* Rota para a página de lançamento de notas *@
                     <NavLink class="nav-link" href="notas">
                         <span class="oi oi-pencil" aria-hidden="true"></span> Lançar Notas
                     </NavLink>
@@ -68,13 +67,11 @@
 
     protected override void OnInitialized()
     {
-        // Subscreve ao evento para redesenhar o menu quando o login/logout ocorrer
         AuthService.OnAuthStateChanged += StateHasChanged;
     }
 
     public void Dispose()
     {
-        // Limpa a subscrição para evitar memory leaks
         AuthService.OnAuthStateChanged -= StateHasChanged;
     }
 }
